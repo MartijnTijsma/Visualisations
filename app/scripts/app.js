@@ -23,7 +23,7 @@ angular.module('visualisationsApp', [
     });
 }])
 .run(['$rootScope', function($rootScope){
-    $rootScope.$on('$routeChangeStart', function(event, next, current){
+    $rootScope.$on('$routeChangeStart', function(event, next){
         $rootScope.activeMenu = (next && next.$$route) ? next.$$route.menu : 'dashboard';
     });
 }]);
