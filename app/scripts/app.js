@@ -5,6 +5,8 @@ angular.module('visualisationsApp', [
     'ngResource',
     'ngSanitize',
     'ngRoute',
+    'ngAnimate',
+    //'ngTouch',
     'd3'
 ])
 .config(['$routeProvider', function ($routeProvider) {

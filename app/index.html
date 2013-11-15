@@ -26,7 +26,7 @@
     <![endif]-->
 
     <!-- Add your site or application content here -->
-    <div class="container" ng-controller="TabBarCtrl">
+    <div class="container-fluid" ng-controller="TabBarCtrl">
         <div class="header">
             <ul class="nav nav-pills pull-right">
                 <li ng-class="{'active' : activeMenu=='dashboard'}"><a ng-href="/">Dashboard</a></li>
@@ -36,7 +36,9 @@
             <h3 class="text-muted">Visualisation Test</h3>
         </div>
     </div>
-    <div class="container" ng-view=""></div>
+    <div class="view-animate-container">
+        <div class="view-animate" ng-view=""></div>
+    </div>
 
     <!-- Google Analytics: change UA-XXXXX-X to be your site's ID -->
      <!--<script>
@@ -72,6 +74,8 @@
         <script src="bower_components/angular-cookies/angular-cookies.js"></script>
         <script src="bower_components/angular-sanitize/angular-sanitize.js"></script>
         <script src="bower_components/angular-route/angular-route.js"></script>
+        <script src="bower_components/angular-animate/angular-animate.js"></script>
+        <script src="bower_components/angular-touch/angular-touch.js"></script>
         <!-- endbuild -->
 
         <!-- build:js({.tmp,app}) scripts/scripts.js -->
