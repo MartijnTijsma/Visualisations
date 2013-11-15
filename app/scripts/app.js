@@ -4,7 +4,8 @@ angular.module('visualisationsApp', [
     'ngCookies',
     'ngResource',
     'ngSanitize',
-    'ngRoute'
+    'ngRoute',
+    'd3'
 ])
 .config(['$routeProvider', function ($routeProvider) {
     $routeProvider
@@ -17,6 +18,11 @@ angular.module('visualisationsApp', [
         templateUrl: 'views/detail.html',
         controller: 'DetailCtrl',
         menu: 'detail'
+    })
+    .when('/barchart', {
+        templateUrl: 'views/barChart.html',
+        controller: 'BarChartCtrl',
+        menu: 'barchart'
     })
     .otherwise({
         redirectTo: '/'

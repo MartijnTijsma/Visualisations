@@ -30,6 +30,7 @@
         <div class="header">
             <ul class="nav nav-pills pull-right">
                 <li ng-class="{'active' : activeMenu=='dashboard'}"><a ng-href="/">Dashboard</a></li>
+                <li ng-class="{'active' : activeMenu=='barchart'}"><a ng-href="/#/barchart">Bar Chart</a></li>
                 <li ng-class="{'active' : activeMenu=='detail'}"><a ng-href="/#/detail">Detail</a></li>
             </ul>
             <h3 class="text-muted">Visualisation Test</h3>
@@ -79,6 +80,9 @@
         <script src="scripts/controllers/dashboard.js"></script>
         <script src="scripts/controllers/detail.js"></script>
         <script src="scripts/controllers/tabbar.js"></script>
+        <script src="scripts/services/d3service.js"></script>
+        <script src="scripts/directives/barchart.js"></script>
+        <script src="scripts/controllers/barchart.js"></script>
         <!-- endbuild -->
 </body>
 </html>
