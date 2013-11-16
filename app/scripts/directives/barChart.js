@@ -25,9 +25,6 @@ angular.module('visualisationsApp')
                     scope.$apply();
                 }
 
-                //temp hardcoded data
-
-
                 //watch for resize event
                 scope.$watch(function(){
                     return angular.element($window)[0].innerWidth;
