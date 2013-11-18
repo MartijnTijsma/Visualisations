@@ -30,6 +30,7 @@
         <div class="header">
             <ul class="nav nav-pills pull-right">
                 <li ng-class="{'active' : activeMenu=='dashboard'}"><a ng-href="/">Dashboard</a></li>
+                <li ng-class="{'active' : activeMenu=='adl'}"><a ng-href="/#/adl">ADL Locations</a></li>
                 <li ng-class="{'active' : activeMenu=='barchart'}"><a ng-href="/#/barchart">Bar Chart</a></li>
                 <li ng-class="{'active' : activeMenu=='detail'}"><a ng-href="/#/detail">Detail</a></li>
             </ul>
@@ -88,6 +89,9 @@
         <script src="scripts/directives/barchart.js"></script>
         <script src="scripts/controllers/barchart.js"></script>
         <script src="scripts/directives/gauge.js"></script>
+        <script src="scripts/controllers/adloverview.js"></script>
+        <script src="scripts/directives/overview.js"></script>
+        <script src="scripts/services/locations.js"></script>
         <!-- endbuild -->
 </body>
 </html>

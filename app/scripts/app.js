@@ -26,6 +26,11 @@ angular.module('visualisationsApp', [
         controller: 'BarChartCtrl',
         menu: 'barchart'
     })
+    .when('/adl', {
+        templateUrl: 'views/adloverview.html',
+        controller: 'AdlOverviewCtrl',
+        menu: 'adl'
+    })
     .otherwise({
         redirectTo: '/'
     });
