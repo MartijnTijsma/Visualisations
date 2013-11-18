@@ -1,6 +1,8 @@
 'use strict';
 
 angular.module('visualisationsApp')
-  .service('Locations', function Locations() {
-    // AngularJS will instantiate a singleton by calling "new" on this function
-  });
+.factory('LocationsService',['$resource', 'ConfigurationService', function Locations($resource, ConfigurationService) {
+    return $resource(ConfigurationService.server.url + '/Locations/:type/:id/:action', ConfigurationService.server.params, {
+        'getAll':   {method:'GET', isArray:true}
+    });
+}]);
