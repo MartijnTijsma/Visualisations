@@ -70,10 +70,10 @@ angular.module('visualisationsApp')
                             .attr('text-anchor', 'end')
                             .style('font-size', fontSize+'px')
                             .style('text-align', 'right')
-                            //.attr('x', 25)
+                            .style('font-family', 'Verdana, Arial')
                             .attr('dx', config.roomNameWidth - 15)
                             .attr('y', function(d, i){
-                                return i * config.lineHeight;
+                                return i * (config.lineHeight + config.linePadding);
                             })
                             .attr('dy', config.lineHeight / 2 + config.linePadding)
                             .text(function(d){
@@ -87,15 +87,17 @@ angular.module('visualisationsApp')
                         ;
                         
                     var timelines = grid.append('rect')
-                        .attr('class', 'timelines')
+                        .attr('class', 'background')
                         .attr('width', function(){return width - config.roomNameWidth})
                         .attr('height', height)
                         .attr('x', config.roomNameWidth)
                         .attr('fill', '#cacaca')
                         ;
 
+                    //draw vertical backgroud rectangles, with alternating colors
                     for(var i =0; i<data.hours; i++){
                         grid.append('rect')
+                            .attr('class', 'hour')
                             .attr('height', height)
                             .attr('width', function(){
                                 return (width - config.roomNameWidth) / data.hours - 1;
@@ -108,9 +110,54 @@ angular.module('visualisationsApp')
                                 return (i%2 == 1) ? '#fff' : "#deedf7";
                             })
                             ;
-
                     }
+
+                    //draw horizontal white grid lines                    
+                    grid.selectAll('line')
+                        .data(data.rooms)
+                        .enter()
+                            .append('line')
+                            .attr('x1', config.roomNameWidth)
+                            .attr('x2', width)
+                            .attr('y1', function(d,i){ return (config.lineHeight + config.linePadding) *(i+1); })
+                            .attr('y2', function(d,i){ return (config.lineHeight + config.linePadding) *(i+1); })
+                            .style('stroke', '#fff')
+                            .style('stroke-width', '2px')
+
+
+                    var parseDateTime = d3.time.format("%y-%m-%d %H:%M:%S").parse;
                     
+                    //setup a scale
+                    var timeScale = d3.time.scale()
+                        .range([config.roomNameWidth, width])
+                        .domain([new Date(data.startTime), new Date(data.endTime)])
+                        ;
+
+                    //draw the location bars
+                    svg.append('g')
+                        .attr('class','timelines')
+                        ;
+
+                    for(var r=0; r<data.rooms.length; r++){
+                        svg.selectAll('g.timelines')
+                            .append('g')
+                            .attr('class', 'timeline')
+                            .selectAll('rect')
+                            .data(data.rooms[r].locations)
+                            .enter()
+                                .append('rect')
+                                .attr('x', function(d){
+                                    return timeScale(new Date(d.start))
+                                })
+                                .attr('y', (20 + config.linePadding + (r * config.lineHeight)))
+                                .attr('width', function(d){
+                                    return (timeScale(new Date(d.end)) - timeScale(new Date(d.start)))
+                                })
+                                .attr('height', 15)
+                                .attr('r',5)
+                                .attr('fill', 'purple')
+                    }
+
 
                 }
 

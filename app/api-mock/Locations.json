@@ -7,7 +7,7 @@
         "transRoomName" : "Woonkamer",
         "locations"     : [{
             "start" : "2013-11-19 06:01:34",
-            "end"   : "2013-11-19 06:48:76"
+            "end"   : "2013-11-19 06:48:46"
         }]
     },{
         "roomName"      : "bedroom",
@@ -17,14 +17,14 @@
             "end"   : "2013-11-19 03:14:18"
         },{
             "start" : "2013-11-19 03:18:03",
-            "end"   : "2013-11-19 06:48:34"
+            "end"   : "2013-11-19 06:00:34"
         }]
     },{
         "roomName"      : "bathroom",
         "transRoomName" : "Badkamer",
         "locations"     : [{
             "start" : "2013-11-19 03:15:08",
-            "end"   : "2013-11-19 03:17:77"
+            "end"   : "2013-11-19 03:17:57"
         }]
     },{
         "roomName"      : "kitchen",
