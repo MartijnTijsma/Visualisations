@@ -18,7 +18,7 @@ angular.module('visualisationsApp')
                 var label       = attrs.label || 'gauge';
                 var min         = parseInt(attrs.min) || 0;
                 var max         = parseInt(attrs.max) || 100;
-                var duration   = parseInt(attrs.duration) || 500;
+                var duration    = parseInt(attrs.duration) || 500;
                 var minorTicks  = 5;
                 var majorTicks  = 5;
                 var range       = max - min;
@@ -204,6 +204,36 @@ angular.module('visualisationsApp')
                     scope.redraw(data);
 
                 }
+
+                //redraw
+                scope.redraw = function(value, duration){
+                    var pointerContainer = svg.select(".pointerContainer");
+                    pointerContainer.selectAll("text").text(Math.round(value));
+
+                    var pointer = pointerContainer.selectAll("path");
+
+                    pointer.transition()
+                        .duration(duration)
+                        //.delay(0)
+                        //.ease("linear")
+                        //.attr("transform", function(d)
+                        .attrTween("transform", function()
+                        {
+                            var pointerValue = value;
+                            if (value > max) pointerValue = max + 0.02*range;
+                            else if (value < min) pointerValue = min - 0.02*range;
+                            var targetRotation = (valueToDegrees(pointerValue) - 90);
+                            var currentRotation = self._currentRotation || targetRotation;
+                            self._currentRotation = targetRotation;
+
+                            return function(step)
+                            {
+                                var rotation = currentRotation + (targetRotation-currentRotation)*step;
+                                return "translate(" + cx + ", " + cy + ") rotate(" + rotation + ")";
+                            }
+                        });
+                }
+
                 //-------------------------------------------------------
                 //--------------------- Functions -----------------------
                 //-------------------------------------------------------
@@ -261,35 +291,6 @@ angular.module('visualisationsApp')
                         point.y -= cy;
                         return point;
                     }
-                }
-
-
-                scope.redraw = function(value, duration){
-                    var pointerContainer = svg.select(".pointerContainer");
-                    pointerContainer.selectAll("text").text(Math.round(value));
-
-                    var pointer = pointerContainer.selectAll("path");
-
-                    pointer.transition()
-                        .duration(duration)
-                        //.delay(0)
-                        //.ease("linear")
-                        //.attr("transform", function(d)
-                        .attrTween("transform", function()
-                        {
-                            var pointerValue = value;
-                            if (value > max) pointerValue = max + 0.02*range;
-                            else if (value < min) pointerValue = min - 0.02*range;
-                            var targetRotation = (valueToDegrees(pointerValue) - 90);
-                            var currentRotation = self._currentRotation || targetRotation;
-                            self._currentRotation = targetRotation;
-
-                            return function(step)
-                            {
-                                var rotation = currentRotation + (targetRotation-currentRotation)*step;
-                                return "translate(" + cx + ", " + cy + ") rotate(" + rotation + ")";
-                            }
-                        });
                 }
             });
         }

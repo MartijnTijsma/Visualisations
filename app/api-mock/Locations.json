@@ -1,0 +1,37 @@
+{
+    "startTime" : "2013-11-19 00:00:00",
+    "endTime"   : "2013-11-20 00:00:00",
+    "hours"     : 24,
+    "rooms" : [{
+        "roomName"      : "livingroom",
+        "transRoomName" : "Woonkamer",
+        "locations"     : [{
+            "start" : "2013-11-19 06:01:34",
+            "end"   : "2013-11-19 06:48:76"
+        }]
+    },{
+        "roomName"      : "bedroom",
+        "transRoomName" : "Slaapkamer",
+        "locations"     : [{
+            "start" : "2013-11-19 00:00:00",
+            "end"   : "2013-11-19 03:14:18"
+        },{
+            "start" : "2013-11-19 03:18:03",
+            "end"   : "2013-11-19 06:48:34"
+        }]
+    },{
+        "roomName"      : "bathroom",
+        "transRoomName" : "Badkamer",
+        "locations"     : [{
+            "start" : "2013-11-19 03:15:08",
+            "end"   : "2013-11-19 03:17:77"
+        }]
+    },{
+        "roomName"      : "kitchen",
+        "transRoomName" : "Keuken",
+        "locations"     : [{
+            "start" : "2013-11-19 06:49:43",
+            "end"   : "2013-11-19 07:07:07"
+        }]
+    }]
+}
