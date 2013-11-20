@@ -82,7 +82,9 @@ angular.module('visualisationsApp')
 
                     //display the room names
                     var fontSize = 16;
-                    svg.selectAll('text')
+                    svg.append('g')
+                        .attr('class', 'roomnames')
+                        .selectAll('text')
                         .data(data.rooms)
                         .enter()
                             .append('text')
@@ -159,22 +161,49 @@ angular.module('visualisationsApp')
                         ;
 
                     for(var r=0; r<data.rooms.length; r++){
-                        svg.selectAll('g.timelines')
+                        var timeline = svg.selectAll('g.timelines')
                             .append('g')
                             .attr('class', 'timeline')
-                            .selectAll('rect')
+                            .attr('id', 'timeline-'+data.rooms[r].roomName);
+
+                        timeline.selectAll('rect')
                             .data(data.rooms[r].locations)
                             .enter()
                                 .append('rect')
                                 .attr('x', function(d){
-                                    return timeScale(new Date(d.start))
+                                    return timeScale(parse(d.start))
                                 })
-                                .attr('y', (20 + config.linePadding + (r * config.lineHeight)))
+                                .attr('y', (15 + config.linePadding + (r * config.lineHeight)))
                                 .attr('width', function(d){
                                     return (timeScale(parse(d.end)) - timeScale(parse(d.start)))
                                 })
                                 .attr('height', 15)
-                                .attr('fill', 'url(#locgradient)')
+                                .attr('fill', 'url(#locgradient)');
+/*
+
+                        var events = d3.layout.histogram()
+                            .bins(timeScale.ticks(24*6)) //every 10 minutes
+                            (data.rooms[r].sensorEvents);
+                        
+                        var y = d3.scale.linear()
+                            .domain([0, 10])
+                            .range([10, 0])
+
+                        timeline.selectAll('circle')    
+                            .data(events)
+                            .enter()
+                                .append('circle')
+                                .attr('cx', function(d){
+                                    return timeScale(d.x)
+                                })
+                                .attr('cy', function(d) {
+                                    return d.y + config.linePadding + (r * config.lineHeight);
+                                })
+                                .attr('r', 5)
+                                .attr('fill', 'red')
+                                
+*/
+
                     }
 
 
