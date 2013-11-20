@@ -145,12 +145,12 @@ angular.module('visualisationsApp')
                             .style('stroke-width', '2px')
 
 
-                    //lvar parseDateTime = d3.time.format("%y-%m-%d %H:%M:%S").parse;
+                    var parse = d3.time.format("%Y-%m-%d %H:%M:%S").parse;
                     
                     //setup a scale
                     var timeScale = d3.time.scale()
                         .range([config.roomNameWidth, width])
-                        .domain([new Date(data.startTime), new Date(data.endTime)])
+                        .domain([parse(data.startTime), parse(data.endTime)])
                         ;
 
                     //draw the location bars
@@ -171,7 +171,7 @@ angular.module('visualisationsApp')
                                 })
                                 .attr('y', (20 + config.linePadding + (r * config.lineHeight)))
                                 .attr('width', function(d){
-                                    return (timeScale(new Date(d.end)) - timeScale(new Date(d.start)))
+                                    return (timeScale(parse(d.end)) - timeScale(parse(d.start)))
                                 })
                                 .attr('height', 15)
                                 .attr('fill', 'url(#locgradient)')
