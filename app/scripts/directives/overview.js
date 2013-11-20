@@ -60,6 +60,26 @@ angular.module('visualisationsApp')
                     svg.attr('height', height)
                         .attr('width', width);
 
+                    //define the gradient
+                    var locGradient = svg.append('svg:defs')
+                        .append('svg:linearGradient')
+                            .attr('id','locgradient')
+                            .attr('x1', '0%')
+                            .attr('y1', '0%')
+                            .attr('x2', '0%')
+                            .attr('y2', '100%')
+                            .attr('spreadMethod', 'pad');
+
+                    locGradient.append('svg:stop')
+                        .attr('offset', '0%')
+                        .attr('stop-color', '#BDB0C4')
+                        .attr('stop-opacity', 1);
+
+                    locGradient.append('svg:stop')
+                        .attr('offset', '100%')
+                        .attr('stop-color', '#51196D')
+                        .attr('stop-opacity', 1);
+
                     //display the room names
                     var fontSize = 16;
                     svg.selectAll('text')
@@ -125,7 +145,7 @@ angular.module('visualisationsApp')
                             .style('stroke-width', '2px')
 
 
-                    var parseDateTime = d3.time.format("%y-%m-%d %H:%M:%S").parse;
+                    //lvar parseDateTime = d3.time.format("%y-%m-%d %H:%M:%S").parse;
                     
                     //setup a scale
                     var timeScale = d3.time.scale()
@@ -154,8 +174,7 @@ angular.module('visualisationsApp')
                                     return (timeScale(new Date(d.end)) - timeScale(new Date(d.start)))
                                 })
                                 .attr('height', 15)
-                                .attr('r',5)
-                                .attr('fill', 'purple')
+                                .attr('fill', 'url(#locgradient)')
                     }
 
 
