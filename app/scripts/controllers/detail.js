@@ -2,7 +2,8 @@
 
 angular.module('visualisationsApp')
 .controller('DetailCtrl', ['$scope', 'PortService', function ($scope, PortService) {
-    $scope.port = {};
+    $scope.ports = [];
+
     /*var portId = 97;
 
     $scope.refreshData = function(pId){
@@ -25,7 +26,7 @@ angular.module('visualisationsApp')
 
     $scope.startTime = '2013-11-21 00:00:00';
     $scope.endTime = '2013-11-22 00:00:00';
-    $scope.port = {
+    var port = {
         data_history : [
             {timestamp: '2013-11-21 00:00:00', average: 800},
             {timestamp: '2013-11-21 01:00:00', average: 450},
@@ -54,4 +55,6 @@ angular.module('visualisationsApp')
             {timestamp: '2013-11-22 00:00:00', average: 477},
         ]
     }
+
+    $scope.ports.push(port)
 }]);

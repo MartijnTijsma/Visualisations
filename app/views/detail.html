@@ -1,2 +1,4 @@
 <h3>Meetcentrale Charts</h3>
-<div chart data="port.data_history" start="startTime" end="endTime"></div>
+<div class="row-fluid" ng-repeat="port in ports">
+    <div chart data="port.data_history" start="startTime" end="endTime"></div>
+</div>
