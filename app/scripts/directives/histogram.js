@@ -79,7 +79,7 @@ angular.module('visualisationsApp')
                 //console.log(ts);
                 // Generate a log-normal distribution with a median of 30 minutes.
                 var values = d3.range(1000).map(d3.random.logNormal(Math.log(30), .4));
-                console.log(values)
+                //console.log(values)
 
                 // Formatters for counts and times (converting numbers to Dates).
                 var formatCount = d3.format(",.0f"),
@@ -93,13 +93,14 @@ angular.module('visualisationsApp')
                 var x = d3.time.scale()
                     .domain([parse("2013-11-19 00:00:00"), parse("2013-11-20 00:00:00")])
                     .range([0, width]);
+
                 var bins = 24*12;
                 // Generate a histogram using twenty uniformly-spaced bins.
-                var data = d3.layout.histogram()                
+                var data = d3.layout.histogram()
                     .bins(x.ticks(bins))
                     (ts);
 
-                console.log(data);
+                //console.log(data);
                 var y = d3.scale.linear()
                     .domain([0, 25])
                     .range([height, 0]);
@@ -121,17 +122,17 @@ angular.module('visualisationsApp')
                     .data(data)
                   .enter().append("g")
                     .attr("class", "bar")
-                    .attr("transform", function(d) { 
-                        return "translate(" + x(d.x) + "," + y(d.y) + ")"; 
+                    .attr("transform", function(d) {
+                        return "translate(" + x(d.x) + "," + y(d.y) + ")";
                     });
 
                 bar.append("rect")
                     .attr("x", function(d){
-                        return x(d.x)                        
+                        return x(d.x)
                     })
                     .attr("width", width/bins)
-                    .attr("height", function(d) { 
-                        return height - y(d.y); 
+                    .attr("height", function(d) {
+                        return height - y(d.y);
                     });
 
                 bar.append("text")
@@ -146,7 +147,7 @@ angular.module('visualisationsApp')
                     .attr("transform", "translate(0," + height + ")")
                     .call(xAxis);
 
-                
+
             });
         }
     };

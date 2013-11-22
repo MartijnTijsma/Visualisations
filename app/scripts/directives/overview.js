@@ -6,6 +6,7 @@ angular.module('visualisationsApp')
         restrict: 'EA',
         scope: {
             locations   : '=', //bi-directional
+            events      : '=', //bi-directional
             start       : '=', //bi-directional
             end         : '=', //bi-directional
             period      : '=', //bi-directional
@@ -14,12 +15,16 @@ angular.module('visualisationsApp')
             d3Service.d3().then(function(d3){
                 //configuration variables
                 var config = {}
-                config.margin           = parseInt(attrs.margin) || 20;
-                config.locOffset        = parseInt(attrs.offset) || 15;
-                config.lineHeight       = parseInt(attrs.lineHeight) || 40;
-                config.linePadding      = parseInt(attrs.linePadding) || 5;
-                config.duration         = parseInt(attrs.duration) || 500;
+                config.margin           = parseInt(attrs.margin) || 20; //px
+                config.lineHeight       = parseInt(attrs.lineHeight) || 40; //px
+                config.linePadding      = parseInt(attrs.linePadding) || 5; //px
+                config.locOffset        = Math.round(.2 * config.lineHeight); //px
+                config.eventOffset      = Math.round(.375 * config.lineHeight); //px
+                config.duration         = parseInt(attrs.duration) || 500; //ms
+                config.step             = parseInt(attrs.step) || 10; //minutes
                 config.roomNameWidth    = 150;
+
+                console.log(config);
 
                 //select element and create svg
                 var svg = d3.select(element[0])
@@ -37,27 +42,34 @@ angular.module('visualisationsApp')
                 scope.$watch(function(){
                     return angular.element($window)[0].innerWidth;
                 }, function(){
-                    scope.render(scope.locations, scope.start, scope.end, scope.period);
+                    scope.render(scope.locations, scope.events, scope.start, scope.end, scope.period);
                 });
 
-                //watch for data changes and re-render
+                //watch for locations data changes and re-render
                 scope.$watch('locations', function(newVal){
-                    return scope.render(newVal, scope.start, scope.end, scope.period);
+                    return scope.render(newVal, scope.events, scope.start, scope.end, scope.period);
                 }, true);
 
+                //watch for sensor data changes and re-render
+                scope.$watch('events', function(newVal){
+                    return scope.render(scope.locations, newVal, scope.start, scope.end, scope.period);
+                }, true);
+
+
+
                 //render
-                scope.render = function(locations, startTime, endTime, period){
+                scope.render = function(locations, events, startTime, endTime, period){
                     console.log('render');
                     //remove all previous items before render
                     svg.selectAll('*').remove();
 
                     //if we don't pass any data, return out of the element
                     if(!locations){ return; }
-                    
+
                     //if we don't pass any rooms, return out of the element
                     if(!locations.rooms || locations.rooms.length == 0){ return; }
                     console.log(locations.rooms.length + ' rooms')
-                    
+
                     //if we don't pass a start and end date, return
                     if(!startTime || !endTime){ return; }
                     console.log('startTime: '+startTime+', endTime: '+endTime);
@@ -71,7 +83,7 @@ angular.module('visualisationsApp')
                     //configure svg size
                     var width = d3.select(element[0]).node().offsetWidth -config.margin;
                     var height = locations.rooms.length * (config.lineHeight + config.linePadding);
-                    
+
                     svg.attr('height', height)
                         .attr('width', width);
 
@@ -122,8 +134,8 @@ angular.module('visualisationsApp')
                     var grid = svg.append('g')
                         .attr('class', 'grid')
                         ;
-                        
-                    var timelines = grid.append('rect')
+
+                    var lines = grid.append('rect')
                         .attr('class', 'background')
                         .attr('width', function(){return width - config.roomNameWidth})
                         .attr('height', height)
@@ -131,13 +143,14 @@ angular.module('visualisationsApp')
                         .attr('fill', '#cacaca')
                         ;
 
+
                     //draw vertical backgroud rectangles, with alternating colors
                     for(var i =0; i<period; i++){
                         grid.append('rect')
                             .attr('class', 'hour')
                             .attr('height', height)
                             .attr('width', function(){
-                                return (width - config.roomNameWidth) / period - 1;
+                                return (width - config.roomNameWidth) / period - 2;
                             })
                             .attr('x', function(){
                                 return (config.roomNameWidth + (((width - config.roomNameWidth) / period) * i)) +1;
@@ -149,7 +162,7 @@ angular.module('visualisationsApp')
                             ;
                     }
 
-                    //draw horizontal white grid lines                    
+                    //draw horizontal white grid lines
                     grid.selectAll('line')
                         .data(locations.rooms)
                         .enter()
@@ -163,53 +176,98 @@ angular.module('visualisationsApp')
 
 
                     var parse = d3.time.format("%Y-%m-%d %H:%M:%S").parse;
-                    
+
                     //setup a scale
                     var timeScale = d3.time.scale()
                         .range([config.roomNameWidth, width])
                         .domain([parse(startTime), parse(endTime)])
                         ;
 
-                    //draw the location bars
-                    svg.append('g')
-                        .attr('class','timelines')
-                        ;
+                    if(locations && locations.rooms && locations.rooms.length > 0){
+                        //make a group for the timelines
+                        svg.append('g')
+                            .attr('class','timelines')
+                            ;
 
-                    for(var r=0; r<locations.rooms.length; r++){
-                        var timeline = svg.selectAll('g.timelines')
-                            .append('g')
-                            .attr('class', 'timeline')
-                            .attr('id', 'timeline-'+locations.rooms[r].roomName);
+                        //draw the location bars
+                        for(var l=0; l<locations.rooms.length; l++){
+                            var timeline = svg.selectAll('g.timelines')
+                                .append('g')
+                                .attr('class', 'timeline')
+                                .attr('id', 'timeline-'+locations.rooms[l].roomName);
 
-                        timeline.selectAll('rect')
-                            .data(locations.rooms[r].locations)
-                            .enter()
-                                .append('rect')
-                                .attr('x', function(d){
-                                    return timeScale(parse(d.start))
-                                })
-                                .attr('y', config.locOffset + (r * (config.linePadding + config.lineHeight)))
-                                .attr('width', function(d){
-                                    return (timeScale(parse(d.end)) - timeScale(parse(d.start)))
-                                })
-                                .attr('height', 15)
-                                .attr('fill', 'url(#locgradient)');
-
-
+                            timeline.selectAll('rect')
+                                .data(locations.rooms[l].locations)
+                                .enter()
+                                    .append('rect')
+                                    .attr('x', function(d){
+                                        return timeScale(parse(d.start))
+                                    })
+                                    .attr('y', config.locOffset + (l * (config.linePadding + config.lineHeight)))
+                                    .attr('width', function(d){
+                                        return (timeScale(parse(d.end)) - timeScale(parse(d.start)))
+                                    })
+                                    .attr('height', 15)
+                                    .attr('fill', 'url(#locgradient)');
+                        }
                     }
 
+                    console.log('draw sensor data: ', events);
+                    //draw the sensor events
+                    if(events && events.rooms && events.rooms.length > 0){
 
+                        //make a group for the sparklines
+                        svg.append('g')
+                            .attr('class', 'sparklines')
+
+
+                        //configure the ammount of bins
+                        var bins = period * Math.round(60 / config.step);
+
+                        for(var e=0; e<events.rooms.length; e++){
+                            var timestamps = [];
+                            events.rooms[e].events.forEach(function(ts){
+                                timestamps.push(parse(ts));
+                            });
+                            //console.log(timestamps);
+
+                            if(timestamps.length > 0){
+                                var data = d3.layout.histogram()
+                                    .bins(timeScale.ticks(bins))
+                                    (timestamps);
+
+                                //console.log(data);
+
+                                //setup a scale for the y-axis (value)
+                                var yScale = d3.scale.linear()
+                                    .range([Math.round(.5*config.lineHeight), 0])
+                                    //.domain([0, 10]);
+                                    .domain([0, d3.max(data, function(d) { return d.y; })]);
+                                console.log(Math.round(.5*config.lineHeight))
+                                var sparkline = svg.selectAll('g.sparklines')
+                                    .append('g')
+                                    .attr('class', 'sparkline')
+                                    .attr('id', 'sparkline-'+events.rooms[e].roomName);
+
+                                var line = d3.svg.line()
+                                    .x(function(d){ return timeScale(d.x); })
+                                    .y(function(d){
+                                        return (e * (config.linePadding + config.lineHeight)) + yScale(d.y) + config.eventOffset;
+                                    })
+                                    .interpolate('cardinal')
+
+                                sparkline.append('path')
+                                    .attr('class', 'line')
+                                    .datum(data)
+                                    .attr('d', line)
+                                    .style('stroke-width', '.5px')
+                                    .style('stroke', 'red')
+                                    .style('fill', 'none')
+                            }
+                        }
+
+                    }
                 }
-
-                //redraw
-                scope.redraw = function(data, duration){
-                    if(!data || !data.rooms){return;}
-                    console.log('redraw')
-                }
-
-                //-------------------------------------------------------
-                //--------------------- Functions -----------------------
-                //-------------------------------------------------------
 
             });
         }
