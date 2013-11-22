@@ -5,13 +5,17 @@ angular.module('visualisationsApp')
     return {
         restrict: 'EA',
         scope: {
-            data: '=', //bi-directional
+            locations   : '=', //bi-directional
+            start       : '=', //bi-directional
+            end         : '=', //bi-directional
+            period      : '=', //bi-directional
         },
         link: function postLink(scope, element, attrs) {
             d3Service.d3().then(function(d3){
                 //configuration variables
                 var config = {}
                 config.margin           = parseInt(attrs.margin) || 20;
+                config.locOffset        = parseInt(attrs.offset) || 15;
                 config.lineHeight       = parseInt(attrs.lineHeight) || 40;
                 config.linePadding      = parseInt(attrs.linePadding) || 5;
                 config.duration         = parseInt(attrs.duration) || 500;
@@ -33,25 +37,36 @@ angular.module('visualisationsApp')
                 scope.$watch(function(){
                     return angular.element($window)[0].innerWidth;
                 }, function(){
-                    scope.render(scope.data);
+                    scope.render(scope.locations, scope.start, scope.end, scope.period);
                 });
 
                 //watch for data changes and re-render
-                scope.$watch('data', function(newVal){
-                    return scope.render(newVal);
+                scope.$watch('locations', function(newVal){
+                    return scope.render(newVal, scope.start, scope.end, scope.period);
                 }, true);
 
                 //render
-                scope.render = function(data){
-                    console.log('render ', data);
+                scope.render = function(data, startTime, endTime, period){
+                    console.log('render');
                     //remove all previous items before render
                     svg.selectAll('*').remove();
 
                     //if we don't pass any data, return out of the element
                     if(!data){ return; }
+                    
                     //if we don't pass any rooms, return out of the element
                     if(!data.rooms || data.rooms.length == 0){ return; }
-                    console.log('render data')
+                    console.log(data.rooms.length + ' rooms')
+                    
+                    //if we don't pass a start and end date, return
+                    if(!startTime || !endTime){ return; }
+                    console.log('startTime: '+startTime+', endTime: '+endTime);
+
+                    //if we don't pass a period, return
+                    if(!period){ return; }
+                    console.log(period)
+
+                    console.log('render data: ', data)
 
                     //configure svg size
                     var width = d3.select(element[0]).node().offsetWidth -config.margin;
@@ -117,15 +132,15 @@ angular.module('visualisationsApp')
                         ;
 
                     //draw vertical backgroud rectangles, with alternating colors
-                    for(var i =0; i<data.hours; i++){
+                    for(var i =0; i<period; i++){
                         grid.append('rect')
                             .attr('class', 'hour')
                             .attr('height', height)
                             .attr('width', function(){
-                                return (width - config.roomNameWidth) / data.hours - 1;
+                                return (width - config.roomNameWidth) / period - 1;
                             })
                             .attr('x', function(){
-                                return (config.roomNameWidth + (((width - config.roomNameWidth) / data.hours) * i)) +1;
+                                return (config.roomNameWidth + (((width - config.roomNameWidth) / period) * i)) +1;
                             })
                             .attr('y', 0)
                             .attr('fill', function(){
@@ -152,7 +167,7 @@ angular.module('visualisationsApp')
                     //setup a scale
                     var timeScale = d3.time.scale()
                         .range([config.roomNameWidth, width])
-                        .domain([parse(data.startTime), parse(data.endTime)])
+                        .domain([parse(startTime), parse(endTime)])
                         ;
 
                     //draw the location bars
@@ -173,7 +188,7 @@ angular.module('visualisationsApp')
                                 .attr('x', function(d){
                                     return timeScale(parse(d.start))
                                 })
-                                .attr('y', (15 + config.linePadding + (r * config.lineHeight)))
+                                .attr('y', config.locOffset + (r * (config.linePadding + config.lineHeight)))
                                 .attr('width', function(d){
                                     return (timeScale(parse(d.end)) - timeScale(parse(d.start)))
                                 })
