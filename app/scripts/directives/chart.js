@@ -5,7 +5,10 @@ angular.module('visualisationsApp')
     return {
         restrict: 'EA',
         scope: {
-            data: '=', //bi-directional
+            data    : '=', //bi-directional
+            start   : '=',
+            end     : '=',
+            period  : '='
         },
         link: function postLink(scope, element, attrs) {
             d3Service.d3().then(function(d3){
@@ -14,7 +17,6 @@ angular.module('visualisationsApp')
                 config.margin           = parseInt(attrs.margin) || 20;
                 config.height           = parseInt(attrs.height) || 60;
                 config.padding          = parseInt(attrs.padding) || 5;
-                config.period           = parseInt(attrs.period) || 24; //amount of hours
                 config.duration         = parseInt(attrs.duration) || 500;
                 config.roomNameWidth    = 150;
 
@@ -38,16 +40,16 @@ angular.module('visualisationsApp')
                 scope.$watch(function(){
                     return angular.element($window)[0].innerWidth;
                 }, function(){
-                    scope.render(scope.data);
+                    scope.render(scope.data, scope.start, scope.end, scope.period);
                 });
 
                 //watch for data changes and re-render
                 scope.$watch('data', function(newVal){
-                    return scope.render(newVal);
+                    return scope.render(newVal, scope.start, scope.end, scope.period);
                 }, true);
 
                 //render
-                scope.render = function(data){
+                scope.render = function(data, startTime, endTime, period){
                     //remove all previous items before render
                     svg.selectAll('*').remove();
 
@@ -55,10 +57,10 @@ angular.module('visualisationsApp')
                     if(!data){ return; }
 
                     //if we don't pass a start and end date, return
-                    if(!data.start_time || !data.end_time){ return; }
-                    console.log('render data');
-
-                    console.log(data);
+                    if(!startTime || !endTime){ return; }
+                    
+                    //setup the period
+                    config.period = period || 24;
 
                     //configure svg size
                     var width = d3.select(element[0]).node().offsetWidth -config.margin;
@@ -67,22 +69,24 @@ angular.module('visualisationsApp')
                         .attr('width', width);
 
 
-                    //setup a scale
+                    //setup a scale for the x-axis (time)
                     var timeScale = d3.time.scale()
                         .range([config.padding, (width - config.padding ) ])
-                        //.domain([new Date(data.data_history[0]*1000), new Date(data.data_history[data.data_history.length-1]*1000)])
-                        .domain([parse(data.start_time), parse(data.end_time)])
+                        //.domain([new Date(data[0]*1000), new Date(data[data.length-1]*1000)])
+                        .domain([parse(scope.start), parse(scope.end)])
                         ;
 
+                    //setup a scale for the y-axis (value)
                     var yScale = d3.scale.linear()
                         .range([config.height, 0])
-                        //.domain(d3.extent(data.data_history, function(d){return d.maximum;}));
+                        //.domain(d3.extent(data, function(d){return d.maximum;}));
                         .domain([0, 1000])
 
                     //draw the grid
                     var grid = svg.append('g')
                         .attr('class', 'grid');
 
+                    //setup a base rectangle, whole width & height
                     grid.append('rect')
                         .attr('x', 0)
                         .attr('y', 0)
@@ -90,6 +94,7 @@ angular.module('visualisationsApp')
                         .attr('width', width)
                         .attr('fill', '#fff')
 
+                    //draw the vertical grid
                     var gridLines;
                     if(config.period == 1) { //1 hour period, line per quarter
                         gridLines = 4;
@@ -122,7 +127,7 @@ angular.module('visualisationsApp')
 
                     svg.append("path")
                         .attr('class', 'line')
-                        .datum(data.data_history)
+                        .datum(data)
                         .attr("d", line)
                         .style('stroke', '#428BCA')
 
