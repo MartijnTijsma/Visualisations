@@ -46,17 +46,17 @@ angular.module('visualisationsApp')
                 }, true);
 
                 //render
-                scope.render = function(data, startTime, endTime, period){
+                scope.render = function(locations, startTime, endTime, period){
                     console.log('render');
                     //remove all previous items before render
                     svg.selectAll('*').remove();
 
                     //if we don't pass any data, return out of the element
-                    if(!data){ return; }
+                    if(!locations){ return; }
                     
                     //if we don't pass any rooms, return out of the element
-                    if(!data.rooms || data.rooms.length == 0){ return; }
-                    console.log(data.rooms.length + ' rooms')
+                    if(!locations.rooms || locations.rooms.length == 0){ return; }
+                    console.log(locations.rooms.length + ' rooms')
                     
                     //if we don't pass a start and end date, return
                     if(!startTime || !endTime){ return; }
@@ -66,11 +66,11 @@ angular.module('visualisationsApp')
                     if(!period){ return; }
                     console.log(period)
 
-                    console.log('render data: ', data)
+                    console.log('render locations: ', locations)
 
                     //configure svg size
                     var width = d3.select(element[0]).node().offsetWidth -config.margin;
-                    var height = data.rooms.length * (config.lineHeight + config.linePadding);
+                    var height = locations.rooms.length * (config.lineHeight + config.linePadding);
                     
                     svg.attr('height', height)
                         .attr('width', width);
@@ -100,7 +100,7 @@ angular.module('visualisationsApp')
                     svg.append('g')
                         .attr('class', 'roomnames')
                         .selectAll('text')
-                        .data(data.rooms)
+                        .data(locations.rooms)
                         .enter()
                             .append('text')
                             .attr('fill', '#333')
@@ -151,7 +151,7 @@ angular.module('visualisationsApp')
 
                     //draw horizontal white grid lines                    
                     grid.selectAll('line')
-                        .data(data.rooms)
+                        .data(locations.rooms)
                         .enter()
                             .append('line')
                             .attr('x1', config.roomNameWidth)
@@ -175,14 +175,14 @@ angular.module('visualisationsApp')
                         .attr('class','timelines')
                         ;
 
-                    for(var r=0; r<data.rooms.length; r++){
+                    for(var r=0; r<locations.rooms.length; r++){
                         var timeline = svg.selectAll('g.timelines')
                             .append('g')
                             .attr('class', 'timeline')
-                            .attr('id', 'timeline-'+data.rooms[r].roomName);
+                            .attr('id', 'timeline-'+locations.rooms[r].roomName);
 
                         timeline.selectAll('rect')
-                            .data(data.rooms[r].locations)
+                            .data(locations.rooms[r].locations)
                             .enter()
                                 .append('rect')
                                 .attr('x', function(d){
@@ -194,30 +194,7 @@ angular.module('visualisationsApp')
                                 })
                                 .attr('height', 15)
                                 .attr('fill', 'url(#locgradient)');
-/*
 
-                        var events = d3.layout.histogram()
-                            .bins(timeScale.ticks(24*6)) //every 10 minutes
-                            (data.rooms[r].sensorEvents);
-                        
-                        var y = d3.scale.linear()
-                            .domain([0, 10])
-                            .range([10, 0])
-
-                        timeline.selectAll('circle')    
-                            .data(events)
-                            .enter()
-                                .append('circle')
-                                .attr('cx', function(d){
-                                    return timeScale(d.x)
-                                })
-                                .attr('cy', function(d) {
-                                    return d.y + config.linePadding + (r * config.lineHeight);
-                                })
-                                .attr('r', 5)
-                                .attr('fill', 'red')
-                                
-*/
 
                     }
 
