@@ -18,8 +18,8 @@ angular.module('visualisationsApp')
                 config.margin           = parseInt(attrs.margin) || 20; //px
                 config.lineHeight       = parseInt(attrs.lineHeight) || 40; //px
                 config.linePadding      = parseInt(attrs.linePadding) || 5; //px
-                config.locOffset        = Math.round(.2 * config.lineHeight); //px
-                config.eventOffset      = Math.round(.375 * config.lineHeight); //px
+                config.locOffset        = Math.round(.1 * config.lineHeight); //px
+                config.eventOffset      = Math.round(.5 * config.lineHeight); //px
                 config.duration         = parseInt(attrs.duration) || 500; //ms
                 config.step             = parseInt(attrs.step) || 10; //minutes
                 config.roomNameWidth    = 150;
@@ -240,10 +240,9 @@ angular.module('visualisationsApp')
 
                                 //setup a scale for the y-axis (value)
                                 var yScale = d3.scale.linear()
-                                    .range([Math.round(.5*config.lineHeight), 0])
+                                    .range([Math.round(.4*config.lineHeight), 0])
                                     //.domain([0, 10]);
                                     .domain([0, d3.max(data, function(d) { return d.y; })]);
-                                console.log(Math.round(.5*config.lineHeight))
                                 var sparkline = svg.selectAll('g.sparklines')
                                     .append('g')
                                     .attr('class', 'sparkline')

@@ -10,7 +10,7 @@ angular.module('visualisationsApp')
 
     $scope.refreshLocationData = function(){
         console.log('refresh location Data');
-        LocationsService.getDay({}, 
+        LocationsService.getDay({},
             function(response){
                 $scope.locationData = response;
             },
@@ -18,14 +18,14 @@ angular.module('visualisationsApp')
                 if(window.console){
                     console.log(error);
                 }
-            });    
+            });
     }
 
     $scope.refreshLocationData();
 
     $scope.refreshSensorData = function(){
         console.log('refresh sensor Data');
-        SensorDataService.getDay({}, 
+        SensorDataService.getDay({},
             function(response){
                 $scope.sensorData = response;
             },
@@ -33,8 +33,9 @@ angular.module('visualisationsApp')
                 if(window.console){
                     console.log(error);
                 }
-            });    
+            });
     }
 
     $scope.refreshSensorData();
+    //$timeout($scope.refreshSensorData, 2000);
 }]);
