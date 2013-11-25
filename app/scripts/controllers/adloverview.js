@@ -17,6 +17,7 @@ angular.module('visualisationsApp')
                 name: name
             },
             function(response){
+                console.log(response);
                 $scope.rooms = response.rooms;
                 $scope.refreshLocationData();
                 $scope.refreshSensorData();

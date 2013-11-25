@@ -5,6 +5,7 @@ angular.module('visualisationsApp')
     return {
         restrict: 'EA',
         scope: {
+            rooms       : '=', //bi-directional
             locations   : '=', //bi-directional
             events      : '=', //bi-directional
             start       : '=', //bi-directional
@@ -26,12 +27,16 @@ angular.module('visualisationsApp')
 
                 console.log(config);
 
+                var parse = d3.time.format("%Y-%m-%d %H:%M:%S").parse;
+                var width = d3.select(element[0]).node().offsetWidth -config.margin;
+
                 //select element and create svg
                 var svg = d3.select(element[0])
                     .append("svg")
                     //.style('width', '100%')
                     .attr('class', 'overview')
                     ;
+
 
                 //browser onresize event
                 window.onresize = function(){
@@ -45,44 +50,41 @@ angular.module('visualisationsApp')
                     scope.render(scope.locations, scope.events, scope.start, scope.end, scope.period);
                 });
 
+                //watch for rooms data changes and re-render
+                scope.$watch('rooms', function(newVal){
+                    return scope.render(newVal, scope.locations, scope.events, scope.start, scope.end, scope.period);
+                }, true);
+
                 //watch for locations data changes and re-render
                 scope.$watch('locations', function(newVal){
-                    return scope.render(newVal, scope.events, scope.start, scope.end, scope.period);
+                    return scope.drawLocations(newVal, scope.start, scope.end, scope.period);
                 }, true);
 
                 //watch for sensor data changes and re-render
                 scope.$watch('events', function(newVal){
-                    return scope.render(scope.locations, newVal, scope.start, scope.end, scope.period);
+                    return scope.drawEvents(newVal, scope.start, scope.end, scope.period);
                 }, true);
 
 
 
                 //render
-                scope.render = function(locations, events, startTime, endTime, period){
-                    console.log('render');
+                scope.render = function(rooms, locations, events, startTime, endTime, period){
                     //remove all previous items before render
                     svg.selectAll('*').remove();
 
-                    //if we don't pass any data, return out of the element
-                    if(!locations){ return; }
-
                     //if we don't pass any rooms, return out of the element
-                    if(!locations.rooms || locations.rooms.length == 0){ return; }
-                    console.log(locations.rooms.length + ' rooms')
+                    if(!rooms || rooms.length == 0){ return; }
 
                     //if we don't pass a start and end date, return
                     if(!startTime || !endTime){ return; }
-                    console.log('startTime: '+startTime+', endTime: '+endTime);
 
                     //if we don't pass a period, return
                     if(!period){ return; }
-                    console.log(period)
 
-                    console.log('render locations: ', locations)
+                    console.log('render svg, rooms: ',rooms);
 
                     //configure svg size
-                    var width = d3.select(element[0]).node().offsetWidth -config.margin;
-                    var height = locations.rooms.length * (config.lineHeight + config.linePadding);
+                    var height = rooms.length * (config.lineHeight + config.linePadding);
 
                     svg.attr('height', height)
                         .attr('width', width);
@@ -112,7 +114,7 @@ angular.module('visualisationsApp')
                     svg.append('g')
                         .attr('class', 'roomnames')
                         .selectAll('text')
-                        .data(locations.rooms)
+                        .data(rooms)
                         .enter()
                             .append('text')
                             .attr('fill', '#333')
@@ -164,7 +166,7 @@ angular.module('visualisationsApp')
 
                     //draw horizontal white grid lines
                     grid.selectAll('line')
-                        .data(locations.rooms)
+                        .data(rooms)
                         .enter()
                             .append('line')
                             .attr('x1', config.roomNameWidth)
@@ -172,10 +174,19 @@ angular.module('visualisationsApp')
                             .attr('y1', function(d,i){ return (config.lineHeight + config.linePadding) *(i+1); })
                             .attr('y2', function(d,i){ return (config.lineHeight + config.linePadding) *(i+1); })
                             .style('stroke', '#fff')
-                            .style('stroke-width', '2px')
+                            .style('stroke-width', '2px');
 
+                    //scope.drawLocations(locations, startTime, endTime, period);
+                    //scope.drawEvents(events, startTime, endTime, period);
 
-                    var parse = d3.time.format("%Y-%m-%d %H:%M:%S").parse;
+                }
+
+                scope.drawLocations = function(locations, startTime, endTime, period){
+                    if(!locations || !locations.rooms || locations.rooms.length == 0){ return; }
+
+                    console.log('Draw locations: ', locations);
+
+                    svg.selectAll('.timelines').remove();
 
                     //setup a scale
                     var timeScale = d3.time.scale()
@@ -211,8 +222,21 @@ angular.module('visualisationsApp')
                                     .attr('fill', 'url(#locgradient)');
                         }
                     }
+                }
+
+                scope.drawEvents = function(events, startTime, endTime, period){
+                    if(!events || !events.rooms || events.rooms.length == 0){ return; }
 
                     console.log('draw sensor data: ', events);
+
+                    svg.selectAll('.sparklines').remove();
+
+                    //setup a scale
+                    var timeScale = d3.time.scale()
+                        .range([config.roomNameWidth, width])
+                        .domain([parse(startTime), parse(endTime)])
+                        ;
+
                     //draw the sensor events
                     if(events && events.rooms && events.rooms.length > 0){
 

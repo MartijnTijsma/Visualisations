@@ -1,25 +1,32 @@
 {
     "rooms": [
         {
-            "name": "livingroom"
+            "name": "livingroom",
+            "transName": "Woonkamer"
         },
         {
-            "name": "bathroom"
+            "name": "bathroom",
+            "transName": "Badkamer"
         },
         {
-            "name": "toilet"
+            "name": "toilet",
+            "transName": "Toilet"
         },
         {
-            "name": "kitchen"
+            "name": "kitchen",
+            "transName": "Keuken"
         },
         {
-            "name": "bedroom"
+            "name": "bedroom",
+            "transName": "Slaapkamer"
         },
         {
-            "name": "spareroom"
+            "name": "spareroom",
+            "transName": "Extra kamer"
         },
         {
-            "name": "outside"
+            "name": "outside",
+            "transName": "Buiten"
         }
     ]
 }
