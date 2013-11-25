@@ -1,0 +1,25 @@
+{
+    "rooms": [
+        {
+            "name": "livingroom"
+        },
+        {
+            "name": "bathroom"
+        },
+        {
+            "name": "toilet"
+        },
+        {
+            "name": "kitchen"
+        },
+        {
+            "name": "bedroom"
+        },
+        {
+            "name": "spareroom"
+        },
+        {
+            "name": "outside"
+        }
+    ]
+}

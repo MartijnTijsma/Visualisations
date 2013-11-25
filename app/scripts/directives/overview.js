@@ -126,7 +126,7 @@ angular.module('visualisationsApp')
                             })
                             .attr('dy', config.lineHeight / 2 + config.linePadding)
                             .text(function(d){
-                                return d.transRoomName;
+                                return d.transName;
                             })
                             ;
 
@@ -194,7 +194,7 @@ angular.module('visualisationsApp')
                             var timeline = svg.selectAll('g.timelines')
                                 .append('g')
                                 .attr('class', 'timeline')
-                                .attr('id', 'timeline-'+locations.rooms[l].roomName);
+                                .attr('id', 'timeline-'+locations.rooms[l].name);
 
                             timeline.selectAll('rect')
                                 .data(locations.rooms[l].locations)
@@ -246,7 +246,7 @@ angular.module('visualisationsApp')
                                 var sparkline = svg.selectAll('g.sparklines')
                                     .append('g')
                                     .attr('class', 'sparkline')
-                                    .attr('id', 'sparkline-'+events.rooms[e].roomName);
+                                    .attr('id', 'sparkline-'+events.rooms[e].name);
 
                                 var line = d3.svg.line()
                                     .x(function(d){ return timeScale(d.x); })
