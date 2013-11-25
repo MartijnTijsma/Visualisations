@@ -4,8 +4,8 @@ angular.module('visualisationsApp')
 .controller('AdlOverviewCtrl', ['$scope', 'LocationsService', 'SensorDataService', '$timeout', function ($scope, LocationsService, SensorDataService, $timeout) {
     $scope.locationData = {};
     $scope.sensorData = {};
-    $scope.startTime    = "2013-11-19 00:00:00";
-    $scope.endTime      = "2013-11-20 00:00:00";
+    $scope.startTime    = "2013-11-21 00:00:00";
+    $scope.endTime      = "2013-11-22 00:00:00";
     $scope.period       = 24;
 
     $scope.refreshLocationData = function(){
