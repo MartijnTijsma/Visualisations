@@ -11,6 +11,7 @@ angular.module('visualisationsApp')
             start       : '=', //bi-directional
             end         : '=', //bi-directional
             period      : '=', //bi-directional
+            onClick     : '&'
         },
         link: function postLink(scope, element, attrs) {
             d3Service.d3().then(function(d3){
@@ -23,12 +24,13 @@ angular.module('visualisationsApp')
                 config.eventOffset      = Math.round(.5 * config.lineHeight); //px
                 config.duration         = parseInt(attrs.duration) || 500; //ms
                 config.step             = parseInt(attrs.step) || 10; //minutes
-                config.roomNameWidth    = 150;
+                config.roomNameWidth    = 0;
 
                 console.log(config);
 
                 var parse = d3.time.format("%Y-%m-%d %H:%M:%S").parse;
                 var width = d3.select(element[0]).node().offsetWidth -config.margin;
+                var height = config.lineHeight + config.linePadding;
 
                 //select element and create svg
                 var svg = d3.select(element[0])
@@ -56,17 +58,27 @@ angular.module('visualisationsApp')
 
                 //watch for rooms data changes and re-render
                 scope.$watch('rooms', function(newVal){
+                    console.log('Room data changed')
                     return scope.render(newVal, scope.start, scope.end, scope.period);
                 }, true);
 
                 //watch for locations data changes and re-render
                 scope.$watch('locations', function(newVal){
+                    console.log('Location data changed')
                     return scope.drawLocations(newVal, scope.start, scope.end, scope.period);
                 }, true);
 
                 //watch for sensor data changes and re-render
                 scope.$watch('events', function(newVal){
+                    console.log('Event data changed')
                     return scope.drawEvents(newVal, scope.start, scope.end, scope.period);
+                }, true);
+
+                scope.$watch('period', function(newVal){
+                    console.log('Period data changed, period: '+scope.period+', start: '+scope.start+', end: '+scope.end)
+                    scope.drawLocations(scope.locations, scope.start, scope.end, scope.period);
+                    scope.drawEvents(scope.events, scope.start, scope.end, scope.period);
+                    return;
                 }, true);
 
 
@@ -82,13 +94,11 @@ angular.module('visualisationsApp')
                     //if we don't pass a start and end date, return
                     if(!startTime || !endTime){ return; }
 
-                    //if we don't pass a period, return
                     if(!period){ return; }
-
-                    console.log('render svg, rooms: ',rooms);
+                    console.log('render svg, rooms: ',rooms.length);
 
                     //configure svg size
-                    var height = rooms.length * (config.lineHeight + config.linePadding);
+                    height = rooms.length * (config.lineHeight + config.linePadding);
 
                     svg.attr('height', height)
                         .attr('width', width);
@@ -113,29 +123,6 @@ angular.module('visualisationsApp')
                         .attr('stop-color', '#51196D')
                         .attr('stop-opacity', 1);
 
-                    //display the room names
-                    var fontSize = 16;
-                    svg.append('g')
-                        .attr('class', 'roomnames')
-                        .selectAll('text')
-                        .data(rooms)
-                        .enter()
-                            .append('text')
-                            .attr('fill', '#333')
-                            .attr('text-anchor', 'end')
-                            .style('font-size', fontSize+'px')
-                            .style('text-align', 'right')
-                            .style('font-family', 'Verdana, Arial')
-                            .attr('dx', config.roomNameWidth - 15)
-                            .attr('y', function(d, i){
-                                return i * (config.lineHeight + config.linePadding);
-                            })
-                            .attr('dy', config.lineHeight / 2 + config.linePadding)
-                            .text(function(d){
-                                return d.transName;
-                            })
-                            ;
-
                     //build the background grid
                     var grid = svg.append('g')
                         .attr('class', 'grid')
@@ -151,22 +138,32 @@ angular.module('visualisationsApp')
 
 
                     //draw vertical backgroud rectangles, with alternating colors
-                    for(var i =0; i<period; i++){
-                        grid.append('rect')
+                    var periods = [];
+                    for(var i=0; i<period; i++){
+                        periods.push(i);
+                    }
+
+                    grid.append('g')
+                        .attr('class', 'hours')
+                        .selectAll('rect')
+                        .data(periods)
+                        .enter()
+                            .append('rect')
                             .attr('class', 'hour')
                             .attr('height', height)
                             .attr('width', function(){
                                 return (width - config.roomNameWidth) / period - 2;
                             })
-                            .attr('x', function(){
-                                return (config.roomNameWidth + (((width - config.roomNameWidth) / period) * i)) +1;
+                            .attr('x', function(d, i){
+                                return (config.roomNameWidth + (((width - config.roomNameWidth) / period) * d)) +1;
                             })
                             .attr('y', 0)
-                            .attr('fill', function(){
-                                return (i%2 == 1) ? '#fff' : "#deedf7";
+                            .attr('fill', function(d){
+                                return (d%2 == 1) ? '#fff' : "#deedf7";
                             })
-                            ;
-                    }
+                            .on('click', function(d){
+                                return scope.onClick({'time': d});
+                            });
 
                     //draw horizontal white grid lines
                     grid.selectAll('line')
@@ -180,9 +177,6 @@ angular.module('visualisationsApp')
                             .style('stroke', '#fff')
                             .style('stroke-width', '2px');
 
-                    //scope.drawLocations(locations, startTime, endTime, period);
-                    //scope.drawEvents(events, startTime, endTime, period);
-
                 }
 
                 scope.drawLocations = function(locations, startTime, endTime, period){
@@ -192,7 +186,7 @@ angular.module('visualisationsApp')
 
                     console.log('Draw locations: ', locations);
 
-
+                    console.log(startTime+' - '+endTime)
                     //setup a scale
                     var timeScale = d3.time.scale()
                         .range([config.roomNameWidth, width])
@@ -217,14 +211,14 @@ angular.module('visualisationsApp')
                                 .enter()
                                     .append('rect')
                                     .attr('x', function(d){
-                                        return timeScale(parse(d.start))
+                                        return timeScale(parse(d.start));
                                     })
                                     .attr('y', config.locOffset + (l * (config.linePadding + config.lineHeight)))
                                     .attr('width', function(d){
                                         return (timeScale(parse(d.end)) - timeScale(parse(d.start)))
                                     })
                                     .attr('height', 15)
-                                    .attr('fill', 'url(#locgradient)');
+                                    .attr('fill', 'url(#locgradient)')
                         }
                     }
                 }

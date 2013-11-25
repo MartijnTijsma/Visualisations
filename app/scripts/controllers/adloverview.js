@@ -3,12 +3,12 @@
 angular.module('visualisationsApp')
 .controller('AdlOverviewCtrl', ['$scope', 'LocationsService', 'SensorDataService', 'RoomsService', '$timeout', function ($scope, LocationsService, SensorDataService, RoomsService, $timeout) {
     $scope.id = 69;
+    $scope.period       = 24;
     $scope.rooms = [];
     $scope.locationData = {};
     $scope.sensorData = {};
     var date = moment('2013-11-21 00:00:00');
     calculateTimes();
-    $scope.period       = 24;
 
     $scope.previousPeriod = function(){
         date.subtract('days', 1);
@@ -25,8 +25,9 @@ angular.module('visualisationsApp')
     }
 
     function calculateTimes() {
-        $scope.startTime    = date.clone().format('YYYY-MM-DD 00:00:00');//"2013-11-21 00:00:00";
-        $scope.endTime      = date.clone().add('days', 1).format("YYYY-MM-DD 00:00:00");
+        $scope.startTime    = date.clone().format('YYYY-MM-DD HH:mm:ss');//"2013-11-21 00:00:00";
+        $scope.endTime      = date.clone().add('hours', $scope.period).format("YYYY-MM-DD HH:mm:ss");
+        console.log('calculateTimes: '+$scope.startTime+' - '+$scope.endTime);
         $scope.displayDate = new Date($scope.startTime);
     }
 
@@ -88,4 +89,22 @@ angular.module('visualisationsApp')
     }
 
     //$timeout($scope.refreshSensorData, 2000);
+
+
+    $scope.showPeriod = function(time){
+        $scope.$apply(function(){
+            if($scope.period < 24){
+                date.hours(0)
+                date.minutes(0)
+                date.seconds(0)
+                $scope.period = 24;
+                calculateTimes();
+            } else {
+                var range = Math.floor(time / 6);
+                date.add('hours', range * 6);
+                $scope.period = 6;
+                calculateTimes();
+            }
+        });
+    }
 }]);
