@@ -47,12 +47,16 @@ angular.module('visualisationsApp')
                 scope.$watch(function(){
                     return angular.element($window)[0].innerWidth;
                 }, function(){
-                    scope.render(scope.locations, scope.events, scope.start, scope.end, scope.period);
+                    width = d3.select(element[0]).node().offsetWidth -config.margin;
+                    console.log('resize, new width: '+width)
+                    scope.render(scope.rooms, scope.start, scope.end, scope.period);
+                    scope.drawLocations(scope.locations, scope.start, scope.end, scope.period);
+                    scope.drawEvents(scope.events, scope.start, scope.end, scope.period);
                 });
 
                 //watch for rooms data changes and re-render
                 scope.$watch('rooms', function(newVal){
-                    return scope.render(newVal, scope.locations, scope.events, scope.start, scope.end, scope.period);
+                    return scope.render(newVal, scope.start, scope.end, scope.period);
                 }, true);
 
                 //watch for locations data changes and re-render
@@ -68,7 +72,7 @@ angular.module('visualisationsApp')
 
 
                 //render
-                scope.render = function(rooms, locations, events, startTime, endTime, period){
+                scope.render = function(rooms, startTime, endTime, period){
                     //remove all previous items before render
                     svg.selectAll('*').remove();
 
