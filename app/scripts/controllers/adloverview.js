@@ -6,9 +6,29 @@ angular.module('visualisationsApp')
     $scope.rooms = [];
     $scope.locationData = {};
     $scope.sensorData = {};
-    $scope.startTime    = "2013-11-21 00:00:00";
-    $scope.endTime      = "2013-11-22 00:00:00";
+    var date = moment('2013-11-21 00:00:00');
+    calculateTimes();
     $scope.period       = 24;
+
+    $scope.previousPeriod = function(){
+        date.subtract('days', 1);
+        calculateTimes();
+        $scope.refreshLocationData();
+        $scope.refreshSensorData();
+    }
+
+    $scope.nextPeriod = function(){
+        date.add('days', 1);
+        calculateTimes();
+        $scope.refreshLocationData();
+        $scope.refreshSensorData();
+    }
+
+    function calculateTimes() {
+        $scope.startTime    = date.clone().format('YYYY-MM-DD 00:00:00');//"2013-11-21 00:00:00";
+        $scope.endTime      = date.clone().add('days', 1).format("YYYY-MM-DD 00:00:00");
+        $scope.displayDate = new Date($scope.startTime);
+    }
 
     $scope.refreshRooms = function(){
         console.log('refresh room data');
@@ -44,6 +64,7 @@ angular.module('visualisationsApp')
                 if(window.console){
                     console.log(error);
                 }
+                $scope.locationData = {};
             }
         );
     }
@@ -62,6 +83,7 @@ angular.module('visualisationsApp')
                 if(window.console){
                     console.log(error);
                 }
+                $scope.sensorData = {};
             });
     }
 

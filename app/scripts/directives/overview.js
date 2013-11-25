@@ -186,11 +186,12 @@ angular.module('visualisationsApp')
                 }
 
                 scope.drawLocations = function(locations, startTime, endTime, period){
+                    svg.selectAll('.timelines').remove();
+
                     if(!locations || !locations.rooms || locations.rooms.length == 0){ return; }
 
                     console.log('Draw locations: ', locations);
 
-                    svg.selectAll('.timelines').remove();
 
                     //setup a scale
                     var timeScale = d3.time.scale()
@@ -229,11 +230,11 @@ angular.module('visualisationsApp')
                 }
 
                 scope.drawEvents = function(events, startTime, endTime, period){
+                    svg.selectAll('.sparklines').remove();
+
                     if(!events || !events.rooms || events.rooms.length == 0){ return; }
 
                     console.log('draw sensor data: ', events);
-
-                    svg.selectAll('.sparklines').remove();
 
                     //setup a scale
                     var timeScale = d3.time.scale()

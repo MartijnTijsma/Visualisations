@@ -1,3 +1,16 @@
 <h3>Adl Locations</h3>
+<div class="row-fluid">
+    <div class="col-md-2">
+        <a ng-click="previousPeriod()"><i class="glyphicon glyphicon-chevron-left"></i>&nbsp;Vorige</a>
+    </div>
+    <div class="col-md-8 text-center">
+        <!--<h4>{{startTime}} - {{endTime}}</h4>-->
+        <h4>{{displayDate | date:'dd-MM-yyyy'}}</h4>
+    </div>
+    <div class="col-md-2">
+        <a ng-click="nextPeriod()">Volgende&nbsp;<i class="glyphicon glyphicon-chevron-right"></i></a>
+    </div>
+</div>
+
 <div adl-locations rooms="rooms" locations="locationData" events="sensorData" start="startTime" end="endTime" period="period" step="1"></div>
 <!--<div histogram class="histogram"></div>-->
