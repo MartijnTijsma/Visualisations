@@ -1,13 +1,14 @@
 .chart {
-    .axis path,
-    .axis line {
-      fill: none;
-      stroke: #000;
-      shape-rendering: crispEdges;
-    }
-
-    .x.axis path {
-      display: none;
+    .axis {
+      path,
+      line {
+        fill: none;
+        stroke: #ddd;
+        shape-rendering: crispEdges;
+      }
+      text{
+        fill: #888;
+      }
     }
 
     .line {

@@ -14,7 +14,7 @@ angular.module('visualisationsApp')
             d3Service.d3().then(function(d3){
                 //setup the variables
                 var config = {}
-                config.margin           = parseInt(attrs.margin) || 20;
+                config.margin           = parseInt(attrs.margin) || 25;
                 config.height           = parseInt(attrs.height) || 60;
                 config.padding          = parseInt(attrs.padding) || 5;
                 config.duration         = parseInt(attrs.duration) || 500;
@@ -62,10 +62,12 @@ angular.module('visualisationsApp')
                     config.period = period || 24;
 
                     //configure svg size
-                    var width = d3.select(element[0]).node().offsetWidth -config.margin;
+                    var width = d3.select(element[0]).node().offsetWidth - (config.margin *2);
 
-                    svg.attr('height', config.height)
-                        .attr('width', width);
+                    var chart = svg.attr('height', config.height + (config.margin *2))
+                        .attr('width', width + (config.margin *2))
+                        .append("g")
+                            .attr("transform", "translate(" + (config.margin *2) + "," + config.margin+ ")");;
 
 
                     //setup a scale for the x-axis (time)
@@ -82,7 +84,7 @@ angular.module('visualisationsApp')
                         .domain([0, 1000])
 
                     //draw the grid
-                    var grid = svg.append('g')
+                    var grid = chart.append('g')
                         .attr('class', 'grid');
 
                     //setup a base rectangle, whole width & height
@@ -125,7 +127,7 @@ angular.module('visualisationsApp')
                             return yScale(d.minimum);
                         });
 
-                    svg.append("path")
+                    chart.append("path")
                         .attr('class', 'area')
                         .datum(data)
                         .attr("d", area)
@@ -143,14 +145,28 @@ angular.module('visualisationsApp')
                         //.interpolate('basis');
                         .interpolate('linear');
 
-                    svg.append("path")
+                    chart.append("path")
                         .attr('class', 'line')
                         .datum(data)
                         .attr("d", line)
                         .style('stroke', '#428BCA')
 
 
+                    var yAxis = d3.svg.axis().scale(yScale)
+                        .orient("left").ticks(3);
 
+                    chart.append('g')
+                        .attr('class', 'y axis')
+                        .call(yAxis)
+
+                    var xAxis = d3.svg.axis()
+                        .scale(timeScale)
+                        .orient("bottom")
+
+                    chart.append('g')
+                        .attr('class', 'x axis')
+                        .attr('transform', 'translate(0,'+config.height+')')
+                        .call(xAxis)
                 }
             });
         }
