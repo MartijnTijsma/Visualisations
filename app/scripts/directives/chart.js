@@ -18,7 +18,6 @@ angular.module('visualisationsApp')
                 config.height           = parseInt(attrs.height) || 60;
                 config.padding          = parseInt(attrs.padding) || 5;
                 config.duration         = parseInt(attrs.duration) || 500;
-                config.roomNameWidth    = 150;
 
                 //setup a datetime parser
                 var parse = d3.time.format("%Y-%m-%d %H:%M:%S").parse;
@@ -58,7 +57,7 @@ angular.module('visualisationsApp')
 
                     //if we don't pass a start and end date, return
                     if(!startTime || !endTime){ return; }
-                    
+
                     //setup the period
                     config.period = period || 24;
 
@@ -114,6 +113,25 @@ angular.module('visualisationsApp')
                             .style('stroke-width', '2px')
                     }
 
+                    //draw the area
+                    var area = d3.svg.area()
+                        .x(function(d){
+                            return timeScale(parse(d.timestamp));
+                        })
+                        .y0(function(d){
+                            return yScale(d.maximum);
+                        })
+                        .y1(function(d){
+                            return yScale(d.minimum);
+                        });
+
+                    svg.append("path")
+                        .attr('class', 'area')
+                        .datum(data)
+                        .attr("d", area)
+                        .style('fill', '#428BCA')
+                        .style('fill-opacity', '0.25');
+
                     //draw the line
                     var line = d3.svg.line()
                         .x(function(d){
@@ -130,6 +148,7 @@ angular.module('visualisationsApp')
                         .datum(data)
                         .attr("d", line)
                         .style('stroke', '#428BCA')
+
 
 
                 }
