@@ -76,6 +76,7 @@ angular.module('visualisationsApp')
 
                 scope.$watch('period', function(newVal){
                     console.log('Period data changed, period: '+scope.period+', start: '+scope.start+', end: '+scope.end)
+                    scope.drawGrid(scope.rooms, scope.period);
                     scope.drawLocations(scope.locations, scope.start, scope.end, scope.period);
                     scope.drawEvents(scope.events, scope.start, scope.end, scope.period);
                     return;
@@ -123,6 +124,14 @@ angular.module('visualisationsApp')
                         .attr('stop-color', '#51196D')
                         .attr('stop-opacity', 1);
 
+
+
+
+                    scope.drawGrid(rooms, period);
+
+                }
+
+                scope.drawGrid = function(rooms, period){
                     //build the background grid
                     var grid = svg.append('g')
                         .attr('class', 'grid')
@@ -169,7 +178,6 @@ angular.module('visualisationsApp')
                             .attr('y2', function(d,i){ return (config.lineHeight + config.linePadding) *(i+1); })
                             .style('stroke', '#fff')
                             .style('stroke-width', '2px');
-
                 }
 
                 scope.drawLocations = function(locations, startTime, endTime, period){
@@ -203,13 +211,15 @@ angular.module('visualisationsApp')
                                 .data(locations.rooms[l].locations)
                                 .enter()
                                     .append('rect')
-                                    .attr('x', function(d){ return timeScale(parse(d.start)); })
+                                    //.attr('x', function(d){ return timeScale(parse(d.start)); })
+                                    .attr('x', 0)
                                     .attr('width', 0)
                                     .attr('y', config.locOffset + (l * (config.linePadding + config.lineHeight)))
                                     .attr('height', 15)
                                     .attr('fill', 'url(#locgradient)')
                                     .transition()
                                         .duration(1000)
+                                        .attr('x', function(d){ return timeScale(parse(d.start)); })
                                         .attr('width', function(d){ return (timeScale(parse(d.end)) - timeScale(parse(d.start))); })
                         }
                     }
