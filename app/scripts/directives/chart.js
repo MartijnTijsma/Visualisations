@@ -105,15 +105,23 @@ angular.module('visualisationsApp')
                         gridLines = Math.round(config.period / 24);
                     }
 
-                    for(var lineNr=0; lineNr<=gridLines; lineNr++){
-                        grid.append('line')
-                            .attr('x1', config.padding + (lineNr * (width - (config.padding*2)) / gridLines))
-                            .attr('x2', config.padding + (lineNr * (width - (config.padding*2)) / gridLines))
-                            .attr('y1', 0)
-                            .attr('y2', config.height)
-                            .style('stroke', '#ddd')
-                            .style('stroke-width', '2px')
-                    }
+                    //vertical lines
+                    grid.selectAll(".vline").data(d3.range(gridLines)).enter()
+                        .append("line")
+                        .attr("x1", function (d) {
+                            return config.padding + (d * (width - (config.padding*2)) / gridLines);
+                        })
+                        .attr("x2", function (d) {
+                            return config.padding + (d * (width - (config.padding*2)) / gridLines);
+                        })
+                        .attr("y1", function (d) {
+                            return 0;
+                        })
+                        .attr("y2", function (d) {
+                            return config.height;
+                        })
+                        .style("stroke", "#ddd")
+                        .style('stroke-width', '2px');
 
                     //draw the area
                     var area = d3.svg.area()

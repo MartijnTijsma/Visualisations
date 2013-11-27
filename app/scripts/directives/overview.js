@@ -136,17 +136,10 @@ angular.module('visualisationsApp')
                         .attr('fill', '#cacaca')
                         ;
 
-
-                    //draw vertical backgroud rectangles, with alternating colors
-                    var periods = [];
-                    for(var i=0; i<period; i++){
-                        periods.push(i);
-                    }
-
                     grid.append('g')
                         .attr('class', 'hours')
                         .selectAll('rect')
-                        .data(periods)
+                        .data(d3.range(period))
                         .enter()
                             .append('rect')
                             .attr('class', 'hour')
@@ -154,7 +147,7 @@ angular.module('visualisationsApp')
                             .attr('width', function(){
                                 return (width - config.roomNameWidth) / period - 2;
                             })
-                            .attr('x', function(d, i){
+                            .attr('x', function(d){
                                 return (config.roomNameWidth + (((width - config.roomNameWidth) / period) * d)) +1;
                             })
                             .attr('y', 0)
