@@ -203,15 +203,14 @@ angular.module('visualisationsApp')
                                 .data(locations.rooms[l].locations)
                                 .enter()
                                     .append('rect')
-                                    .attr('x', function(d){
-                                        return timeScale(parse(d.start));
-                                    })
+                                    .attr('x', function(d){ return timeScale(parse(d.start)); })
+                                    .attr('width', 0)
                                     .attr('y', config.locOffset + (l * (config.linePadding + config.lineHeight)))
-                                    .attr('width', function(d){
-                                        return (timeScale(parse(d.end)) - timeScale(parse(d.start)))
-                                    })
                                     .attr('height', 15)
                                     .attr('fill', 'url(#locgradient)')
+                                    .transition()
+                                        .duration(1000)
+                                        .attr('width', function(d){ return (timeScale(parse(d.end)) - timeScale(parse(d.start))); })
                         }
                     }
                 }
@@ -271,13 +270,18 @@ angular.module('visualisationsApp')
                                     })
                                     .interpolate('cardinal')
 
+                                sparkline.attr("transform", "translate(0," + ((e+1) * (config.linePadding + (0.4*config.lineHeight) + config.eventOffset)) + ") scale(1, 0)")
+                                    .transition().duration(1000)
+                                    .attr("transform", "translate(0,0) scale(1, 1)");
+
+
                                 sparkline.append('path')
                                     .attr('class', 'line')
-                                    .datum(data)
-                                    .attr('d', line)
                                     .style('stroke-width', '.5px')
                                     .style('stroke', 'red')
                                     .style('fill', 'none')
+                                    .datum(data)
+                                    .attr('d', line)
                             }
                         }
 
