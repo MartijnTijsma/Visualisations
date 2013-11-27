@@ -170,6 +170,7 @@ angular.module('visualisationsApp')
                     var xAxis = d3.svg.axis()
                         .scale(timeScale)
                         .orient("bottom")
+                        .tickFormat(d3.time.format('%H:%M'))
 
                     chart.append('g')
                         .attr('class', 'x axis')
