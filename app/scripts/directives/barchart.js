@@ -8,7 +8,7 @@ angular.module('visualisationsApp')
             data: '=' // bi-directional data-binding
         },
         link: function postLink(scope, element, attrs) {
-            d3Service.d3().then(function(d3){
+            //d3Service.d3().then(function(d3){
                 //variables
                 var margin = parseInt(attrs.margin) || 20;
                 var barHeight = parseInt(attrs.barHeight) || 20;
@@ -99,7 +99,7 @@ angular.module('visualisationsApp')
                             ;
 
                 }
-            });
+            //});
         }
     };
 }]);

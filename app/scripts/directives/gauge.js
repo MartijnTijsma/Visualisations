@@ -8,7 +8,7 @@ angular.module('visualisationsApp')
             data: '=', //bi-directional
         },
         link: function postLink(scope, element, attrs) {
-            d3Service.d3().then(function(d3){
+            //d3Service.d3().then(function(d3){
                 //variables
                 var size        = parseInt(attrs.size) || 250;
                 size            = size * 0.9;
@@ -292,7 +292,7 @@ angular.module('visualisationsApp')
                         return point;
                     }
                 }
-            });
+            //});
         }
     };
 }]);

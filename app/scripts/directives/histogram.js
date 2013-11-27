@@ -5,7 +5,7 @@ angular.module('visualisationsApp')
     return {
         restrict: 'EA',
         link: function postLink(scope, element, attrs) {
-            d3Service.d3().then(function(d3){
+            //d3Service.d3().then(function(d3){
                 var parse = d3.time.format("%Y-%m-%d %H:%M:%S").parse;
 
                 var ts = [];
@@ -148,7 +148,7 @@ angular.module('visualisationsApp')
                     .call(xAxis);
 
 
-            });
+            //});
         }
     };
 }]);

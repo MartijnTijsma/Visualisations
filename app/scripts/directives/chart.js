@@ -11,7 +11,7 @@ angular.module('visualisationsApp')
             period  : '='
         },
         link: function postLink(scope, element, attrs) {
-            d3Service.d3().then(function(d3){
+            //d3Service.d3().then(function(d3){
                 //setup the variables
                 var config = {}
                 config.margin           = parseInt(attrs.margin) || 25;
@@ -168,7 +168,7 @@ angular.module('visualisationsApp')
                         .attr('transform', 'translate(0,'+config.height+')')
                         .call(xAxis)
                 }
-            });
+            //});
         }
     };
 }]);
